@@ -17,5 +17,5 @@
 set -euo pipefail
 
 echo "Verifying dep check"
-dep check
+go mod verify
 echo "No issue found"

@@ -3,7 +3,7 @@ go_import_path: github.com/csi-driver/blobfuse-csi-driver
 
 env:
   global:
-    - GO111MODULE=off
+    - GO111MODULE=on
 
 go:
   - "1.11.4"
@@ -11,7 +11,6 @@ go:
 before_install:
   - go get github.com/mattn/goveralls
   - go get github.com/rexray/gocsi/csc
-  - go get github.com/golang/dep/cmd/dep
 
 script:
   - hack/verify-all.sh

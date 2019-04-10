@@ -69,3 +69,5 @@ cscope.*
 /bazel-*
 *.pyc
 
+# Go Modules
+vendor/

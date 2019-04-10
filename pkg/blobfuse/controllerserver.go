@@ -21,15 +21,16 @@ import (
 	"fmt"
 	"strings"
 
-	"k8s.io/kubernetes/pkg/volume/util"
-
 	azstorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/container-storage-interface/spec/lib/go/csi"
+	volumehelper "github.com/csi-driver/blobfuse-csi-driver/pkg/util"
 	"github.com/pborman/uuid"
-	"k8s.io/klog"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"k8s.io/klog"
+	"k8s.io/kubernetes/pkg/volume/util"
 )
 
 // const blobfuseAccountNamePrefix = "fuse"
@@ -51,7 +52,7 @@ func (d *Driver) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest)
 	}
 
 	volSizeBytes := int64(req.GetCapacityRange().GetRequiredBytes())
-	requestGiB := int(util.RoundUpSize(volSizeBytes, 1024*1024*1024))
+	requestGiB := int(volumehelper.RoundUpGiB(volSizeBytes))
 
 	parameters := req.GetParameters()
 	var storageAccountType, resourceGroup, location, accountName, containerName string

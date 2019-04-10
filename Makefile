@@ -26,24 +26,30 @@ all: blobfuse
 test:
 	go test -covermode=count -coverprofile=profile.cov ./pkg/...
 	$GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
+
 integration-test:
 	sudo test/integration/run-tests-all-clouds.sh
+
 test-sanity:
 	go test -v ./test/sanity/...
+
 blobfuse:
-	if [ ! -d ./vendor ]; then dep ensure -vendor-only; fi
 	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-X github.com/csi-driver/blobfuse-csi-driver/pkg/blobfuse.vendorVersion=$(IMAGE_VERSION) -extldflags "-static"' -o _output/blobfuseplugin ./pkg/blobfuseplugin
+
 blobfuse-windows:
-	if [ ! -d ./vendor ]; then dep ensure -vendor-only; fi
 	CGO_ENABLED=0 GOOS=windows go build -a -ldflags '-X github.com/csi-driver/blobfuse-csi-driver/pkg/blobfuse.vendorVersion=$(IMAGE_VERSION) -extldflags "-static"' -o _output/blobfuseplugin.exe ./pkg/blobfuseplugin
+
 blobfuse-container: blobfuse
 	docker build --no-cache -t $(IMAGE_TAG) -f ./pkg/blobfuseplugin/Dockerfile .
+
 push: blobfuse-container
 	docker push $(IMAGE_TAG)
+
 push-latest: blobfuse-container
 	docker push $(IMAGE_TAG)
 	docker tag $(IMAGE_TAG) $(IMAGE_TAG_LATEST)
 	docker push $(IMAGE_TAG_LATEST)
+
 clean:
 	go clean -r -x
 	-rm -rf _output
